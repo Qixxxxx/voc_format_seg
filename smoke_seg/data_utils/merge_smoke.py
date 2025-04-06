@@ -1,12 +1,14 @@
 import os
-import random
+from concurrent.futures import ProcessPoolExecutor
 
 import cv2
 import numpy as np
 from PIL import Image
+from tqdm import tqdm
 
 
-def save_merge_image(base_img_path, smoke_img_path, concentration):
+def save_merge_image(arg):
+    base_img_path, smoke_img_path, concentration = arg
     base_img = cv2.imread(base_img_path)
     smoke_img = cv2.imread(smoke_img_path)
     image = overlay_smoke(base_img, smoke_img, concentration)
@@ -20,8 +22,7 @@ def save_merge_image(base_img_path, smoke_img_path, concentration):
     r, g, b = smoke.split()
     smoke_result = Image.merge("RGB", (b, g, r))
     filename, _ = os.path.splitext(os.path.basename(base_img_path))
-    smoke_result.save(os.path.join(save_merge_image_gt_dir, filename+'.png'))
-
+    smoke_result.save(os.path.join(save_merge_image_gt_dir, filename + '.png'))
 
 
 def overlay_smoke(base_img, smoke_img, concentration=1.0):
@@ -50,18 +51,6 @@ def overlay_smoke(base_img, smoke_img, concentration=1.0):
 
 
 if __name__ == '__main__':
-    # base = cv2.imread("C:/Users/Qx/Downloads/wallhaven-72v1go_3840x2160.png")
-    # smoke = cv2.imread("D:/raw_smoke/video_video_104_smoke_000417.jpg")
-    # rgb_result = overlay_smoke(base, smoke, 0.8)
-    # # 展示
-    # rgb_result.show()
-
-    # # 创建输出目录
-    # output_dir = "D:/virtual_smoke_data"
-    # os.makedirs(output_dir, exist_ok=True)
-    # output_path = os.path.join(output_dir, "result1.jpg")
-    # rgb_result.save(output_path)
-
     """
     批量融合，并且生成gt图
     """
@@ -70,12 +59,24 @@ if __name__ == '__main__':
 
     image_list = [f for f in os.listdir(source_dir)]
     smoke_list = [f for f in os.listdir(smoke_dir)]
-
-    for image in image_list:
+    smoke_num = len(smoke_list)
+    task_args = []
+    for i, image in enumerate(image_list):
         img_path = os.path.join(source_dir, image)
-        random_num = random.randint(0, len(smoke_list) - 1)
+        # index = random.randint(0, len(smoke_list) - 1) # 随机取值
+        index = i % smoke_num
         # concentration = random.uniform(0.8, 1.5)  # 随机浓度
-        smoke_path = os.path.join(smoke_dir, smoke_list[random_num])
+        smoke_path = os.path.join(smoke_dir, smoke_list[index])
         # save_merge_image(img_path, smoke_path, round(concentration, 2))
-        save_merge_image(img_path, smoke_path, 1)
+        task_args.append((img_path, smoke_path, 1))
+        # save_merge_image(img_path, smoke_path, 1)
 
+    # 多进程
+    progress = tqdm(total=len(image_list), desc="Processing Images", unit="img")
+    with ProcessPoolExecutor(max_workers=20) as executor:
+        futures = []
+        for args in task_args:
+            future = executor.submit(save_merge_image, args)
+            future.add_done_callback(lambda _: progress.update())
+            futures.append(future)
+    progress.close()
