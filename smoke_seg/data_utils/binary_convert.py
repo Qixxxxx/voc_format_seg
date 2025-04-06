@@ -111,7 +111,7 @@ if __name__ == "__main__":
     image_list = [f for f in os.listdir(SOURCE_DIR)]
     for filename in image_list:
         # 检查文件格式
-        task_args.append((filename, SOURCE_DIR, TARGET_DIR, 10))
+        task_args.append((filename, SOURCE_DIR, TARGET_DIR, 5))
 
     # 多进程
     progress = tqdm(total=len(image_list), desc="Processing Images", unit="img")
