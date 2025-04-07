@@ -60,7 +60,7 @@ def per_Accuracy(hist):
     return np.sum(np.diag(hist)) / np.maximum(np.sum(hist), 1)
 
 
-def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, name_classes=None):
+def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list=None):
     print('Num classes', num_classes)
     # -----------------------------------------#
     #   创建一个全是0的矩阵，是一个混淆矩阵
@@ -100,7 +100,7 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, name_classes=None
         # ------------------------------------------------#
         hist += fast_hist(label.flatten(), pred.flatten(), num_classes)
         # 每计算10张就输出一下目前已计算的图片中所有类别平均的mIoU值
-        if name_classes is not None and ind > 0 and ind % 10 == 0:
+        if classes_name_list is not None and ind > 0 and ind % 10 == 0:
             print('{:d} / {:d}: mIou-{:0.2f}%; mPA-{:0.2f}%; Accuracy-{:0.2f}%'.format(
                 ind,
                 len(gt_imgs),
@@ -118,9 +118,9 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, name_classes=None
     # ------------------------------------------------#
     #   逐类别输出一下mIoU值
     # ------------------------------------------------#
-    if name_classes is not None:
+    if classes_name_list is not None:
         for ind_class in range(num_classes):
-            print('===>' + name_classes[ind_class] + ':\tIou-' + str(round(IoUs[ind_class] * 100, 2)) \
+            print('===>' + classes_name_list[ind_class] + ':\tIou-' + str(round(IoUs[ind_class] * 100, 2)) \
                   + '; Recall (equal to the PA)-' + str(round(PA_Recall[ind_class] * 100, 2)) + '; Precision-' + str(
                 round(Precision[ind_class] * 100, 2)))
 
@@ -129,7 +129,7 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, name_classes=None
     # -----------------------------------------------------------------#
     print('===> mIoU: ' + str(round(np.nanmean(IoUs) * 100, 2)) + '; mPA: ' + str(
         round(np.nanmean(PA_Recall) * 100, 2)) + '; Accuracy: ' + str(round(per_Accuracy(hist) * 100, 2)))
-    return np.array(hist, np.int), IoUs, PA_Recall, Precision
+    return np.array(hist, np.int64), IoUs, PA_Recall, Precision
 
 
 def adjust_axes(r, t, fig, axes):

@@ -83,7 +83,7 @@ class LossHistory():
 
 class EvalCallback():
     def __init__(self, net, input_shape, num_classes, image_ids, dataset_path, log_dir, cuda,
-                 miou_out_path=".temp_miou_out", eval_flag=True, period=1):
+                 miou_out_path="temp_miou_out", eval_flag=True, period=1):
         super(EvalCallback, self).__init__()
 
         self.net = net
@@ -157,7 +157,7 @@ class EvalCallback():
         if epoch % self.period == 0 and self.eval_flag:
             self.net = model_eval
             gt_dir = os.path.join(self.dataset_path, "VOC2007/SegmentationClass/")
-            pred_dir = os.path.join(self.miou_out_path, 'detection-results')
+            pred_dir = os.path.join(self.miou_out_path, 'predict_results')
             if not os.path.exists(self.miou_out_path):
                 os.makedirs(self.miou_out_path)
             if not os.path.exists(pred_dir):

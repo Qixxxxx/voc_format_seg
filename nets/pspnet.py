@@ -1,7 +1,7 @@
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
-from backbone.resnet import get_backbone
+from .backbone.resnet import get_backbone
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 

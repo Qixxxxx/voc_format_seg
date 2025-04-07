@@ -29,10 +29,10 @@ def resize_image(image, size):
 
     image = image.resize((nw, nh), Image.BICUBIC)
     new_image = Image.new('RGB', size, (128, 128, 128))
+    # 将缩放后的图像居中粘贴到画布上 居中坐标：((w - nw) // 2, (h - nh) // 2)
     new_image.paste(image, ((w - nw) // 2, (h - nh) // 2))
 
     return new_image, nw, nh
-
 
 # ---------------------------------------------------#
 #   获得学习率

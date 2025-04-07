@@ -191,7 +191,7 @@ def resnet101(pretrained=False, **kwargs):
     return model
 
 def resnet18_conv3x3stem(pretrained=False, **kwargs):
-    model = ResNet(Bottleneck, [3, 4, 6, 3], use_conv3x3_stem=True, **kwargs)
+    model = ResNet(BasicBlock, [2, 2, 2, 2], use_conv3x3_stem=True, **kwargs)
     if pretrained:
         model.load_state_dict(load_url(DEFAULT_MODEL_URLS['resnet18conv3x3stem']), strict=False)
     return model
