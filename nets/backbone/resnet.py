@@ -82,7 +82,8 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, use_conv3x3_stem=False, outstride=32, contract_dilation=True,
                  norm_layer=nn.BatchNorm2d, act_cfg=nn.ReLU(inplace=True)):
 
-        self.inplanes = 128 if use_conv3x3_stem else 64
+        self.use_conv3x3_stem =use_conv3x3_stem
+        self.inplanes = 128 if self.use_conv3x3_stem else 64
         super(ResNet, self).__init__()
         # 使用空洞卷积时的步长设置和空洞率设置
         outstride_to_strides_and_dilations = {
@@ -93,20 +94,17 @@ class ResNet(nn.Module):
         assert outstride in outstride_to_strides_and_dilations, 'unsupport outstride %s' % outstride
         stride_list, dilation_list = outstride_to_strides_and_dilations[outstride]
 
-        if use_conv3x3_stem:
-            self.conv1 = nn.Sequential(
-                nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False),
-                norm_layer(64),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1, bias=False),
-                norm_layer(64),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1, bias=False),
-            )
-        else:
-            self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
 
-        self.bn1 = norm_layer(self.inplanes)
+        self.conv1 =  nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False)
+        self.bn1 = norm_layer(64)
+        self.conv2 = nn.Conv2d(64, 64, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn2 =norm_layer(64)
+        self.conv3 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1, bias=False)
+        self.bn3 = norm_layer(self.inplanes)
+
+        self.conv_org = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        self.bn_org = norm_layer(self.inplanes)
+
         self.relu = act_cfg
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
@@ -137,9 +135,12 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x):
-        x = self.conv1(x)
-        x = self.bn1(x)
-        x = self.relu(x)
+        if self.use_conv3x3_stem:
+            x = self.relu(self.bn1(self.conv1(x)))
+            x = self.relu(self.bn2(self.conv2(x)))
+            x = self.relu(self.bn3(self.conv3(x)))
+        else:
+            x = self.relu(self.bn_org(self.conv_org(x)))
 
         x = self.maxpool(x)
 

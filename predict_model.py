@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 
-from nets.pspnet import MyNet
+from nets.net import MyNet
 from utils.common_util import cvtColor, divide_255, resize_image, show_config
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,16 +19,16 @@ class PredictModel(object):
         # -------------------------------------------------------------------#
         #   model_path指向logs文件夹下的权值文件
         # -------------------------------------------------------------------#
-        "model_path": 'model_data/deeplab_mobilenetv2.pth',
+        "model_path": 'model_data/net_81.12.pth',
         "num_classes": 21,
         # ----------------------------------------#
         #   所使用的的主干网络：
         # ----------------------------------------#
-        "backbone": "resnet101conv3x3stem",
+        "backbone": "resnet50conv3x3stem",
         # ----------------------------------------#
         #   输入图片的大小
         # ----------------------------------------#
-        "input_shape": [256, 256],
+        "input_shape": [512, 512],
         # ----------------------------------------#
         #   下采样的倍数，与训练时设置的一样即可
         # ----------------------------------------#
@@ -105,7 +105,8 @@ class PredictModel(object):
         # ---------------------------------------------------------#
         #   处理维度为 b, c, h, w
         # ---------------------------------------------------------#
-        image_data = np.transpose(divide_255(np.array(image_data, np.float32)), (0, 3, 1, 2))
+        image_data = [np.array(image_data, np.float32) / 255]
+        image_data = np.transpose(image_data, (0, 3, 1, 2))
 
         with torch.no_grad():
             images = torch.from_numpy(image_data).type(torch.FloatTensor)
@@ -132,7 +133,7 @@ class PredictModel(object):
                 seg_img[:, :, 0] += ((pr[:, :] == c) * self.colors[c][0]).astype('uint8')
                 seg_img[:, :, 1] += ((pr[:, :] == c) * self.colors[c][1]).astype('uint8')
                 seg_img[:, :, 2] += ((pr[:, :] == c) * self.colors[c][2]).astype('uint8')
-            image = Image.fromarray(np.uint8(seg_img))
+            image = Image.fromarray(np.uint8(seg_img)).resize((orininal_w, orininal_h))
 
         elif self.mix_type == 1:
             seg_img = np.zeros((np.shape(pr)[0], np.shape(pr)[1], 3))
@@ -140,7 +141,7 @@ class PredictModel(object):
                 seg_img[:, :, 0] += ((pr[:, :] == c) * self.colors[c][0]).astype('uint8')
                 seg_img[:, :, 1] += ((pr[:, :] == c) * self.colors[c][1]).astype('uint8')
                 seg_img[:, :, 2] += ((pr[:, :] == c) * self.colors[c][2]).astype('uint8')
-            image = Image.fromarray(np.uint8(seg_img))
+            image = Image.fromarray(np.uint8(seg_img)).resize((orininal_w, orininal_h))
             #  blend混合
             image = Image.blend(old_img, image, 0.7)
         elif self.mix_type == 2:
@@ -152,10 +153,14 @@ class PredictModel(object):
     """
     获得预测的得分图
     """
+
     def get_predict_score_image(self, image):
         image = cvtColor(image)
+        orininal_h = np.array(image).shape[0]
+        orininal_w = np.array(image).shape[1]
         image_data, nw, nh = resize_image(image, (self.input_shape[1], self.input_shape[0]))
-        image_data = np.transpose(divide_255(np.array(image_data, np.float32)), (0, 3, 1, 2))
+        image_data = [np.array(image_data, np.float32) / 255]
+        image_data = np.transpose(image_data, (0, 3, 1, 2))
 
         with torch.no_grad():
             images = torch.from_numpy(image_data)
@@ -166,7 +171,7 @@ class PredictModel(object):
             pr = pr[int((self.input_shape[0] - nh) // 2): int((self.input_shape[0] - nh) // 2 + nh),
                  int((self.input_shape[1] - nw) // 2): int((self.input_shape[1] - nw) // 2 + nw)]
 
-        image = Image.fromarray(np.uint8(pr))
+        image = Image.fromarray(np.uint8(pr)).resize((orininal_w, orininal_h), Image.NEAREST)
         return image
 
     def get_FPS(self, image, test_interval):

@@ -5,6 +5,7 @@ from .backbone.resnet import get_backbone
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+
 class SPPMoudle(nn.Module):
     def __init__(self, in_channels, out_channels, pool_sizes):
         ''' in_channels: 输入spp模块的通道维度， pool_sizes: 池化核大小组成的list, out_channels:输出通道数'''
@@ -57,14 +58,13 @@ class MyNet(nn.Module):
 
         self.aux_branch = aux_branch
 
-        if self.aux_branch:
-            self.auxiliary_branch = nn.Sequential(
-                nn.Conv2d(1024, 256, kernel_size=3, padding=1, bias=False),
-                nn.BatchNorm2d(256),
-                nn.ReLU(inplace=True),
-                nn.Dropout2d(0.1),
-                nn.Conv2d(256, num_classes, kernel_size=1)
-            )
+        self.auxiliary_branch = nn.Sequential(
+            nn.Conv2d(1024, 256, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout2d(0.1),
+            nn.Conv2d(256, num_classes, kernel_size=1)
+        )
 
         self.initialize_weights(self.final_seg)
 

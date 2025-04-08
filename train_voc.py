@@ -57,11 +57,11 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------------------------#
     #   是否使用主干网络的预训练权重
     # ----------------------------------------------------------------------------------------------------------------------------#
-    pretrained = True
+    pretrained = False
     # ----------------------------------------------------------------------------------------------------------------------------#
     #   模型的权值文件路径
     # ----------------------------------------------------------------------------------------------------------------------------#
-    model_path = ""
+    model_path = 'model_data/backbone_82.56.pth'
     # ---------------------------------------------------------#
     #   下采样的倍数
     # ---------------------------------------------------------#
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #  是否冻结训练,默认先冻结主干训练后解冻训练。
     # ------------------------------------------------------------------#
-    Freeze_Train = False
+    Freeze_Train = True
     # ------------------------------------------------------------------#
     #   冻结阶段训练参数
     #   Init_Epoch          模型当前开始的训练世代，其值可以大于Freeze_Epoch，如设置：
@@ -99,8 +99,8 @@ if __name__ == "__main__":
     #                   当使用SGD优化器时建议设置   Init_lr=7e-3
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     # ------------------------------------------------------------------#
-    Init_lr = 1e-2
-    Min_lr = Init_lr * 0.001
+    Init_lr = 1e-3
+    Min_lr = Init_lr * 0.01
     # ------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、sgd
     #   momentum        优化器内部使用到的momentum参数
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         model_dict = model.state_dict()
         pretrained_dict = torch.load(model_path, map_location=device)
         model_dict.update(pretrained_dict)
-        model.load_state_dict(model_dict)
+        model.load_state_dict(model_dict, strict=False)
         print('Load weights Finished!')
 
     # ----------------------#
@@ -379,7 +379,7 @@ if __name__ == "__main__":
 
             fit_one_epoch(model_train, model, loss_history, eval_callback, optimizer, epoch,
                           epoch_step, epoch_step_val, gen, gen_val, Total_Epoch, Cuda, dice_loss, focal_loss,
-                          cls_weights, num_classes, fp16, scaler, save_period, save_dir, local_rank)
+                          cls_weights, num_classes, fp16, scaler, save_period, save_dir, local_rank, aux_branch)
 
             if distributed:
                 dist.barrier()

@@ -120,9 +120,9 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list
     # ------------------------------------------------#
     if classes_name_list is not None:
         for ind_class in range(num_classes):
-            print('===>' + classes_name_list[ind_class] + ':\tIou-' + str(round(IoUs[ind_class] * 100, 2)) \
-                  + '; Recall (equal to the PA)-' + str(round(PA_Recall[ind_class] * 100, 2)) + '; Precision-' + str(
-                round(Precision[ind_class] * 100, 2)))
+            print('===>' + classes_name_list[ind_class] + ':\tIou-' + str(
+                round(IoUs[ind_class] * 100, 2)) + '; Recall (equal to the PA)-' + str(
+                round(PA_Recall[ind_class] * 100, 2)) + '; Precision-' + str(round(Precision[ind_class] * 100, 2)))
 
     # -----------------------------------------------------------------#
     #   在所有验证集图像上求所有类别平均的mIoU值，计算时忽略NaN值
