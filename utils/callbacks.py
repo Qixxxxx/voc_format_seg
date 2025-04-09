@@ -121,7 +121,8 @@ class EvalCallback():
         # ---------------------------------------------------------#
         #   添加上batch_size维度
         # ---------------------------------------------------------#
-        image_data = np.expand_dims(np.transpose(divide_255(np.array(image_data, np.float32)), (2, 0, 1)), 0)
+        image_data = [divide_255(np.array(image_data, np.float32))]   # 归一化处理
+        image_data = np.transpose(image_data, (0, 3, 1, 2))
 
         with torch.no_grad():
             images = torch.from_numpy(image_data)

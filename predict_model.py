@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 
-from nets.net import MyNet
+from nets.mffnet import MyNet
 from utils.common_util import cvtColor, divide_255, resize_image, show_config
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -105,7 +105,8 @@ class PredictModel(object):
         # ---------------------------------------------------------#
         #   处理维度为 b, c, h, w
         # ---------------------------------------------------------#
-        image_data = [np.array(image_data, np.float32) / 255]
+        # image_data = [np.array(image_data, np.float32) / 255]
+        image_data = [divide_255(np.array(image_data, np.float32))]   # 归一化处理
         image_data = np.transpose(image_data, (0, 3, 1, 2))
 
         with torch.no_grad():
@@ -159,7 +160,8 @@ class PredictModel(object):
         orininal_h = np.array(image).shape[0]
         orininal_w = np.array(image).shape[1]
         image_data, nw, nh = resize_image(image, (self.input_shape[1], self.input_shape[0]))
-        image_data = [np.array(image_data, np.float32) / 255]
+        # image_data = [np.array(image_data, np.float32) / 255]
+        image_data = [divide_255(np.array(image_data, np.float32))]   # 归一化处理
         image_data = np.transpose(image_data, (0, 3, 1, 2))
 
         with torch.no_grad():
