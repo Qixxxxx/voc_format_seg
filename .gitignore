@@ -162,7 +162,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-/datasets/
+/datasets/VOCdevkit
+/datasets/viewed_images
+/miou_pr_dir/
+/miou_out/
+
 *.pth
 /logs/
 /result/
