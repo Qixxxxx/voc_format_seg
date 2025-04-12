@@ -166,7 +166,15 @@ cython_debug/
 /datasets/viewed_images
 
 *.pth
-/voc_logs/
-/results/
-/miou_out/
-/miou_pr_dir/
+
+/voc_logs/*
+!/voc_logs/.gitkeep
+
+/results/*
+!/results/.gitkeep
+
+/miou_out/*
+!/miou_out/.gitkeep
+
+/miou_pr_dir/*
+!/miou_pr_dir/.gitkeep
