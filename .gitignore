@@ -167,4 +167,6 @@ cython_debug/
 
 *.pth
 /voc_logs/
-/result/
+/results/
+/miou_out/
+/miou_pr_dir/
