@@ -164,9 +164,7 @@ cython_debug/
 
 /datasets/VOCdevkit
 /datasets/viewed_images
-/miou_pr_dir/
-/miou_out/
 
 *.pth
-/logs/
+/voc_logs/
 /result/
