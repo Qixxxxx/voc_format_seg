@@ -164,11 +164,19 @@ cython_debug/
 
 /datasets/VOCdevkit
 /datasets/viewed_images
+/datasets/mix_smoke
+/datasets/virtual_smoke
+/datasets/virtual_smoke_v2
+/datasets/really_smoke_with_mask
+/datasets/rellay_smoke_original
 
 *.pth
 
 /voc_logs/*
 !/voc_logs/.gitkeep
+
+/smoke_logs/*
+!/smoke_logs/.gitkeep
 
 /results/*
 !/results/.gitkeep
