@@ -60,7 +60,7 @@ def per_Accuracy(hist):
     return np.sum(np.diag(hist)) / np.maximum(np.sum(hist), 1)
 
 
-def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list=None):
+def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list=None, smoke=False, test_sd=False):
     print('Num classes', num_classes)
     # -----------------------------------------#
     #   创建一个全是0的矩阵，是一个混淆矩阵
@@ -71,7 +71,10 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list
     #   获得验证集标签路径列表，方便直接读取
     #   获得验证集图像分割结果路径列表，方便直接读取
     # ------------------------------------------------#
-    gt_imgs = [join(gt_dir, x + ".png") for x in png_name_list]
+    name = ".png"
+    if test_sd:
+        name = "Alpha.png"
+    gt_imgs = [join(gt_dir, x + name) for x in png_name_list]
     pred_imgs = [join(pred_dir, x + ".png") for x in png_name_list]
 
     # ------------------------------------------------#
@@ -86,6 +89,12 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list
         #   读取一张对应的标签，转化成numpy数组
         # ------------------------------------------------#
         label = np.array(Image.open(gt_imgs[ind]))
+
+        if smoke:
+            label = label / 255  # 烟雾数据集是0,255两个值，所有需要除以255转为0,1
+            # 烟雾按照阈值划分
+            theshold = 0.19
+            label[label > theshold] = 1.
 
         # 如果图像分割结果与标签的大小不一样，这张图片就不计算
         if len(label.flatten()) != len(pred.flatten()):
