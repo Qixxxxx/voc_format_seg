@@ -9,11 +9,9 @@ from utils.metrics import compute_mIoU, show_results
 
 if __name__ == "__main__":
 
-    num_classes = 21
-    classes_name_list = ["background", "aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair",
-                         "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa",
-                         "train", "tvmonitor"]
-    dataset_path = 'datasets/VOCdevkit'
+    num_classes = 2
+    classes_name_list = ["background", "smoke"]
+    dataset_path = 'datasets/virtual_smoke_v2'
     miou_out_path = "miou_out"
     pred_dir = "miou_pr_dir"
 
@@ -25,12 +23,12 @@ if __name__ == "__main__":
 
     model = PredictModel()
 
-    image_ids = open(os.path.join(dataset_path, "VOC2007/ImageSets/Segmentation/val.txt"), 'r').read().splitlines()
-    gt_dir = os.path.join(dataset_path, "VOC2007/SegmentationClass/")
+    image_ids = open(os.path.join(dataset_path, "images_index/test.txt"), 'r').read().splitlines()
+    gt_dir = os.path.join(dataset_path, "images_gt")
 
     print("Get predict result.")
     for image_id in tqdm(image_ids):
-        image_path = os.path.join(dataset_path, "VOC2007/JPEGImages/" + image_id + ".jpg")
+        image_path = os.path.join(dataset_path, "images/" + image_id + ".jpg")
         image = Image.open(image_path)
         image = model.get_predict_score_image(image)
         image.save(os.path.join(pred_dir, image_id + ".png"))

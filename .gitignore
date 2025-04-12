@@ -186,3 +186,7 @@ cython_debug/
 
 /miou_pr_dir/*
 !/miou_pr_dir/.gitkeep
+
+/test_data/test_01/SD01
+/test_data/test_01/SD02
+/test_data/test_01/SD03

@@ -18,6 +18,10 @@ from torch.utils.tensorboard import SummaryWriter
 from utils.common_util import cvtColor, divide_255, resize_image
 from utils.metrics import compute_mIoU
 
+# gt子文件夹
+GT_DIR = "VOC2007/SegmentationClass"
+# image子文件夹
+IMG_DIR = "VOC2007/JPEGImages"
 
 class LossHistory():
     def __init__(self, log_dir, model, input_shape):
@@ -157,7 +161,7 @@ class EvalCallback():
     def on_epoch_end(self, epoch, model_eval):
         if epoch % self.period == 0 and self.eval_flag:
             self.net = model_eval
-            gt_dir = os.path.join(self.dataset_path, "VOC2007/SegmentationClass/")
+            gt_dir = os.path.join(self.dataset_path, GT_DIR)
             pred_dir = os.path.join(self.miou_out_path, 'predict_results')
             if not os.path.exists(self.miou_out_path):
                 os.makedirs(self.miou_out_path)
@@ -168,7 +172,7 @@ class EvalCallback():
                 # -------------------------------#
                 #   从文件中读取图像
                 # -------------------------------#
-                image_path = os.path.join(self.dataset_path, "VOC2007/JPEGImages/" + image_id + ".jpg")
+                image_path = os.path.join(self.dataset_path, IMG_DIR + image_id + ".jpg")
                 image = Image.open(image_path)
                 # ------------------------------#
                 #   获得预测txt
