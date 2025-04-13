@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 
-from nets.mffnet import MyNet
+from nets.ninet import MyNet
 from utils.common_util import cvtColor, divide_255, resize_image, show_config
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,9 +19,9 @@ class PredictModel(object):
         # -------------------------------------------------------------------#
         #   model_path指向logs文件夹下的权值文件
         # -------------------------------------------------------------------#
-        "model_path": 'model_data/net_81.12.pth',
-        "num_classes": 21,
-        # "num_classes": 2, # smoke num_classes
+        "model_path": 'model_data/smoke/ninet/81.55.pth',
+        # "num_classes": 21,
+        "num_classes": 2, # smoke num_classes
         # ----------------------------------------#
         #   所使用的的主干网络：
         # ----------------------------------------#
@@ -29,8 +29,8 @@ class PredictModel(object):
         # ----------------------------------------#
         #   输入图片的大小
         # ----------------------------------------#
-        "input_shape": [512, 512],
-        # "input_shape": [256, 256], # smoke input_shape
+        # "input_shape": [512, 512],
+        "input_shape": [256, 256], # smoke input_shape
         # ----------------------------------------#
         #   下采样的倍数，与训练时设置的一样即可
         # ----------------------------------------#
@@ -57,11 +57,11 @@ class PredictModel(object):
         #   画框设置不同的颜色
         # ---------------------------------------------------#
         if self.num_classes <= 21:
-            self.colors = [(0, 0, 0), (128, 0, 0), (0, 128, 0), (128, 128, 0), (0, 0, 128), (128, 0, 128),
-                           (0, 128, 128), (128, 128, 128), (64, 0, 0), (192, 0, 0), (64, 128, 0), (192, 128, 0),
-                           (64, 0, 128), (192, 0, 128), (64, 128, 128), (192, 128, 128), (0, 64, 0), (128, 64, 0),
-                           (0, 192, 0), (128, 192, 0), (0, 64, 128), (128, 64, 12)]
-            # self.colors = [(0, 0, 0), (255, 255, 255)] # 烟雾
+            # self.colors = [(0, 0, 0), (128, 0, 0), (0, 128, 0), (128, 128, 0), (0, 0, 128), (128, 0, 128),
+            #                (0, 128, 128), (128, 128, 128), (64, 0, 0), (192, 0, 0), (64, 128, 0), (192, 128, 0),
+            #                (64, 0, 128), (192, 0, 128), (64, 128, 128), (192, 128, 128), (0, 64, 0), (128, 64, 0),
+            #                (0, 192, 0), (128, 192, 0), (0, 64, 128), (128, 64, 12)]
+            self.colors = [(0, 0, 0), (255, 255, 255)] # 烟雾
 
         else:
             hsv_tuples = [(x / self.num_classes, 1., 1.) for x in range(self.num_classes)]

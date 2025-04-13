@@ -19,9 +19,9 @@ from utils.common_util import cvtColor, divide_255, resize_image
 from utils.metrics import compute_mIoU
 
 # gt子文件夹
-GT_DIR = "VOC2007/SegmentationClass"
+GT_DIR = "images_gt"
 # image子文件夹
-IMG_DIR = "VOC2007/JPEGImages"
+IMG_DIR = "images"
 
 class LossHistory():
     def __init__(self, log_dir, model, input_shape):

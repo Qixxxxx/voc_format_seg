@@ -141,15 +141,15 @@ class ResNet(nn.Module):
             x = self.relu(self.bn3(self.conv3(x)))
         else:
             x = self.relu(self.bn_org(self.conv_org(x)))
-
-        x = self.maxpool(x)
+        x0 = x
+        x = self.maxpool(x0)
 
         x1 = self.layer1(x)
         x2 = self.layer2(x1)
         x3 = self.layer3(x2)
         x4 = self.layer4(x3)
 
-        return tuple([x1, x2, x3, x4])
+        return tuple([x0, x1, x2, x3, x4])
 
 
 

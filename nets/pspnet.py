@@ -70,7 +70,7 @@ class MyNet(nn.Module):
 
     def forward(self, x):
         input_size = (x.size()[2], x.size()[3])
-        (x1, x2, x3, x4) = self.backbone(x)  # backbone输出
+        (x0, x1, x2, x3, x4) = self.backbone(x)  # backbone输出
 
         spp_out = self.spp(x4)
         seg_final = self.final_seg(spp_out)

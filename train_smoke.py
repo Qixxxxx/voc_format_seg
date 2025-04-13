@@ -9,10 +9,10 @@ import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from nets.pspnet import MyNet
+from nets.ninet import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
 from utils.callbacks import EvalCallback, LossHistory
-from utils.voc_dataloader import CustomDataset, deeplab_dataset_collate
+from utils.smoke_dataloader import CustomDataset, deeplab_dataset_collate
 from utils.common_util import seed_everything, show_config, worker_init_fn
 from utils.fit_function import fit_one_epoch
 
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     # -----------------------------------------------------#
     #   类别数
     # -----------------------------------------------------#
-    num_classes = 21
+    num_classes = 2
     # ---------------------------------#
     #   主干网络：
     # ---------------------------------#
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------------------------#
     #   模型的权值文件路径
     # ----------------------------------------------------------------------------------------------------------------------------#
-    model_path = 'model_data/voc/backbone_82.56.pth'
+    model_path = 'model_data/smoke/ninet/81.55.pth'
     # ---------------------------------------------------------#
     #   下采样的倍数
     # ---------------------------------------------------------#
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # ------------------------------#
     #   输入图片的大小
     # ------------------------------#
-    input_shape = [512, 512]
+    input_shape = [256, 256]
     # ------------------------------------------------------------------#
     #  是否冻结训练,默认先冻结主干训练后解冻训练。
     # ------------------------------------------------------------------#
@@ -85,14 +85,14 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     Init_Epoch = 0
     Freeze_Epoch = 3
-    Freeze_batch_size = 8
+    Freeze_batch_size = 32
     # ------------------------------------------------------------------#
     #   解冻阶段训练参数
     #   Total_Epoch          模型总共训练的epoch
     #   Unfreeze_batch_size     模型在解冻后的batch_size
     # ------------------------------------------------------------------#
     Total_Epoch = 200
-    Unfreeze_batch_size = 8
+    Unfreeze_batch_size = 32
     # ------------------------------------------------------------------#
     #   Init_lr         模型的最大学习率:
     #                   当使用Adam优化器时建议设置  Init_lr=5e-4
@@ -121,17 +121,17 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     # ------------------------------------------------------------------#
-    save_dir = 'voc_logs'
+    save_dir = 'smoke_logs'
     # ------------------------------------------------------------------#
     #   eval_flag       是否在训练时进行评估，评估对象为验证集
     #   eval_period     代表多少个epoch评估一次，不建议频繁的评估
     # ------------------------------------------------------------------#
     eval_flag = True
-    eval_period = 5
+    eval_period = 1
     # ------------------------------------------------------------------#
     #   数据集路径
     # ------------------------------------------------------------------#
-    dataset_path = 'datasets/VOCdevkit'
+    dataset_path = 'datasets/virtual_smoke_v2'
     # ------------------------------------------------------------------#
     #   是否使用dice_loss，建议选项：
     #   种类少（几类）时，设置为True
@@ -241,9 +241,9 @@ if __name__ == "__main__":
     # ---------------------------#
     #   读取数据集对应的txt，使用自己数据集时需要修改路径
     # ---------------------------#
-    with open(os.path.join(dataset_path, "VOC2007/ImageSets/Segmentation/train.txt"), "r") as f:
+    with open(os.path.join(dataset_path, "images_index/train.txt"), "r") as f:
         train_lines = f.readlines()
-    with open(os.path.join(dataset_path, "VOC2007/ImageSets/Segmentation/val.txt"), "r") as f:
+    with open(os.path.join(dataset_path, "images_index/val.txt"), "r") as f:
         val_lines = f.readlines()
     num_train = len(train_lines)
     num_val = len(val_lines)
@@ -259,7 +259,7 @@ if __name__ == "__main__":
         )
         # ---------------------------------------------------------#
         #   总训练世代指的是遍历全部数据的总次数
-        #   总训练步长指的是梯度下降的总次数 
+        #   总训练步长指的是梯度下降的总次数
         #   每个训练世代包含若干训练步长，每个训练步长进行一次梯度下降。
         #   此处仅建议最低训练世代，上不封顶，计算时只考虑了解冻部分
         # ----------------------------------------------------------#
