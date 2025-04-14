@@ -181,9 +181,6 @@ class EvalCallback():
                 image.save(os.path.join(pred_dir, image_id + ".png"))
 
             print("Calculate miou.")
-            # voc
-            # hist, IoUs, PA_Recall, Precision = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, classes_name_list=None)
-            # smoke
             classes_name_list = ["background", "smoke"]
             hist, IoUs, PA_Recall, Precision = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, classes_name_list, smoke=True, test_sd=False)
 

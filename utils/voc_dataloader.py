@@ -168,7 +168,7 @@ class CustomDataset(Dataset):
 
 
 # DataLoader中collate_fn使用
-def deeplab_dataset_collate(batch):
+def net_dataset_collate(batch):
     images = []
     pngs = []
     seg_labels = []
