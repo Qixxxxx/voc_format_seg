@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 
 from nets.pspnet import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
-from utils.callbacks import EvalCallback, LossHistory
+from utils.voc_callbacks import EvalCallback, LossHistory
 from utils.voc_dataloader import CustomDataset, deeplab_dataset_collate
 from utils.common_util import seed_everything, show_config, worker_init_fn
 from utils.fit_function import fit_one_epoch
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------------------------#
     #   模型的权值文件路径
     # ----------------------------------------------------------------------------------------------------------------------------#
-    model_path = 'model_data/voc/backbone_82.56.pth'
+    model_path = ''
     # ---------------------------------------------------------#
     #   下采样的倍数
     # ---------------------------------------------------------#
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #  是否冻结训练,默认先冻结主干训练后解冻训练。
     # ------------------------------------------------------------------#
-    Freeze_Train = True
+    Freeze_Train = False
     # ------------------------------------------------------------------#
     #   冻结阶段训练参数
     #   Init_Epoch          模型当前开始的训练世代，其值可以大于Freeze_Epoch，如设置：
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     #   eval_period     代表多少个epoch评估一次，不建议频繁的评估
     # ------------------------------------------------------------------#
     eval_flag = True
-    eval_period = 5
+    eval_period = 1
     # ------------------------------------------------------------------#
     #   数据集路径
     # ------------------------------------------------------------------#
@@ -159,7 +159,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #   init_type  使用到的初始化设置，可选的有normal、kaiming、xavier、orthogonal
     # ------------------------------------------------------------------#
-    init_type = "kaiming"
+    init_type = "normal"
     # ------------------------------------------------------#
     #   设置用到的显卡
     # ------------------------------------------------------#
