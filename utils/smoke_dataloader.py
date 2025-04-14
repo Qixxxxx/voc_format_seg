@@ -99,9 +99,9 @@ class CustomDataset(Dataset):
         # ------------------------------------------#
         #   颜色抖动  RGB->HVS->RGB
         # ------------------------------------------#
-        hue = rand(-hue, hue)
-        sat = rand(1, sat) if rand() < .5 else 1 / rand(1, sat)
-        val = rand(1, val) if rand() < .5 else 1 / rand(1, val)
+        hue = self.rand(-hue, hue)
+        sat = self.rand(1, sat) if self.rand() < .5 else 1 / self.rand(1, sat)
+        val = self.rand(1, val) if self.rand() < .5 else 1 / self.rand(1, val)
         x = cv2.cvtColor(np.array(image, np.float32) / 255, cv2.COLOR_RGB2HSV)
         x[..., 0] += hue * 360
         x[..., 0][x[..., 0] > 1] -= 1
