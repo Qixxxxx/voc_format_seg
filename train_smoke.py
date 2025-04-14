@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from nets.pspnet import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
 from utils.callbacks import EvalCallback, LossHistory
-from utils.smoke_dataloader import CustomDataset, deeplab_dataset_collate
+from utils.smoke_dataloader import CustomDataset, net_dataset_collate
 from utils.common_util import seed_everything, show_config, worker_init_fn
 from utils.fit_function import fit_one_epoch
 
@@ -319,10 +319,10 @@ if __name__ == "__main__":
             shuffle = True
 
         gen = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
-                         pin_memory=True, drop_last=True, collate_fn=deeplab_dataset_collate, sampler=train_sampler,
+                         pin_memory=True, drop_last=True, collate_fn=net_dataset_collate, sampler=train_sampler,
                          worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
         gen_val = DataLoader(val_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
-                             pin_memory=True, drop_last=True, collate_fn=deeplab_dataset_collate, sampler=val_sampler,
+                             pin_memory=True, drop_last=True, collate_fn=net_dataset_collate, sampler=val_sampler,
                              worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
 
         # ----------------------#
@@ -362,11 +362,11 @@ if __name__ == "__main__":
 
                 gen = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
                                  pin_memory=True,
-                                 drop_last=True, collate_fn=deeplab_dataset_collate, sampler=train_sampler,
+                                 drop_last=True, collate_fn=net_dataset_collate, sampler=train_sampler,
                                  worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
                 gen_val = DataLoader(val_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
                                      pin_memory=True,
-                                     drop_last=True, collate_fn=deeplab_dataset_collate, sampler=val_sampler,
+                                     drop_last=True, collate_fn=net_dataset_collate, sampler=val_sampler,
                                      worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
 
                 UnFreeze_flag = True

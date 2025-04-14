@@ -176,7 +176,7 @@ def deeplab_dataset_collate(batch):
         images.append(img)
         pngs.append(png)
         seg_labels.append(labels)
-    images = torch.from_numpy(np.array(images)).type(torch.FloatTensor)
-    pngs = torch.from_numpy(np.array(pngs)).long()
-    seg_labels = torch.from_numpy(np.array(seg_labels)).type(torch.FloatTensor)
+    images = np.array(images)
+    pngs = np.array(pngs)
+    seg_labels = np.array(seg_labels)
     return images, pngs, seg_labels

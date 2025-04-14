@@ -109,7 +109,6 @@ class PredictModel(object):
         # ---------------------------------------------------------#
         #   处理维度为 b, c, h, w
         # ---------------------------------------------------------#
-        # image_data = [np.array(image_data, np.float32) / 255]
         image_data = [divide_255(np.array(image_data, np.float32))]   # 归一化处理
         image_data = np.transpose(image_data, (0, 3, 1, 2))
 
@@ -164,7 +163,6 @@ class PredictModel(object):
         orininal_h = np.array(image).shape[0]
         orininal_w = np.array(image).shape[1]
         image_data, nw, nh = resize_image(image, (self.input_shape[1], self.input_shape[0]))
-        # image_data = [np.array(image_data, np.float32) / 255]
         image_data = [divide_255(np.array(image_data, np.float32))]   # 归一化处理
         image_data = np.transpose(image_data, (0, 3, 1, 2))
 

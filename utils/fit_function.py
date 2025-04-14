@@ -26,7 +26,10 @@ def fit_one_epoch(model_train, model, loss_history, eval_callback, optimizer, ep
         imgs, pngs, labels = batch
 
         with torch.no_grad():
-            weights = torch.from_numpy(cls_weights)
+            imgs = torch.from_numpy(imgs).type(torch.FloatTensor)
+            pngs = torch.from_numpy(pngs).type(torch.FloatTensor).long()
+            labels = torch.from_numpy(labels).type(torch.FloatTensor)
+            weights = torch.from_numpy(cls_weights).type(torch.FloatTensor)
             if cuda:
                 imgs = imgs.cuda(local_rank)
                 pngs = pngs.cuda(local_rank)
@@ -157,7 +160,10 @@ def fit_one_epoch(model_train, model, loss_history, eval_callback, optimizer, ep
             break
         imgs, pngs, labels = batch
         with torch.no_grad():
-            weights = torch.from_numpy(cls_weights)
+            imgs = torch.from_numpy(imgs).type(torch.FloatTensor)
+            pngs = torch.from_numpy(pngs).type(torch.FloatTensor).long()
+            labels = torch.from_numpy(labels).type(torch.FloatTensor)
+            weights = torch.from_numpy(cls_weights).type(torch.FloatTensor)
             if cuda:
                 imgs = imgs.cuda(local_rank)
                 pngs = pngs.cuda(local_rank)
