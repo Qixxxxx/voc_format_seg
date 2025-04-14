@@ -142,7 +142,7 @@ class ResNet(nn.Module):
         else:
             x = self.relu(self.bn_org(self.conv_org(x)))
         x0 = x
-        x = self.maxpool(x0)
+        x = self.maxpool(x)
 
         x1 = self.layer1(x)
         x2 = self.layer2(x1)
