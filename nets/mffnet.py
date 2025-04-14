@@ -150,8 +150,6 @@ class MyNet(nn.Module):
 
         self.spp = SPPMoudle(fianl_channel, 512, pool_sizes=[1, 2, 3, 6])
 
-        for p in self.parameters():
-            p.requires_grad = False
 
         self.sa = SpatialAttention(7)
         self.prm_2 = PixelRegistration_l(x_3_channel, x_2_channel)   # 1024,512
@@ -188,7 +186,7 @@ class MyNet(nn.Module):
 
     def forward(self, x):
         input_size = (x.size()[2], x.size()[3])
-        (x1, x2, x3, x4) = self.backbone(x)   # backbone输出
+        (x0, x1, x2, x3, x4) = self.backbone(x)   # backbone输出
         fine_size = (x1.size()[2], x1.size()[3])   # 1/4原图大小 256
 
         spp_out = self.spp(x4)           # 1/16原图大小 512

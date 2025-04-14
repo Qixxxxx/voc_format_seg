@@ -172,7 +172,7 @@ class EvalCallback():
                 # -------------------------------#
                 #   从文件中读取图像
                 # -------------------------------#
-                image_path = os.path.join(self.dataset_path, IMG_DIR + image_id + ".jpg")
+                image_path = os.path.join(self.dataset_path, IMG_DIR + "/" + image_id + ".jpg")
                 image = Image.open(image_path)
                 # ------------------------------#
                 #   获得预测txt
@@ -181,7 +181,12 @@ class EvalCallback():
                 image.save(os.path.join(pred_dir, image_id + ".png"))
 
             print("Calculate miou.")
-            _, IoUs, _, _ = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, None)  # 执行计算mIoU的函数
+            # voc
+            # hist, IoUs, PA_Recall, Precision = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, classes_name_list=None)
+            # smoke
+            classes_name_list = ["background", "smoke"]
+            hist, IoUs, PA_Recall, Precision = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, classes_name_list, smoke=True, test_sd=False)
+
             temp_miou = np.nanmean(IoUs) * 100
 
             self.mious.append(temp_miou)
@@ -205,4 +210,5 @@ class EvalCallback():
             plt.close("all")
 
             print("Get miou done.")
+
             shutil.rmtree(self.miou_out_path)

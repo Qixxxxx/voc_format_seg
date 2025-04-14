@@ -190,3 +190,6 @@ cython_debug/
 /test_data/test_01/SD01
 /test_data/test_01/SD02
 /test_data/test_01/SD03
+
+/temp_miou_out/*
+!/temp_miou_out/.gitkeep

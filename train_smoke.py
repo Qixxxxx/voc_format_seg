@@ -9,7 +9,7 @@ import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from nets.ninet import MyNet
+from nets.pspnet import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
 from utils.callbacks import EvalCallback, LossHistory
 from utils.smoke_dataloader import CustomDataset, deeplab_dataset_collate
@@ -61,7 +61,7 @@ if __name__ == "__main__":
     # ----------------------------------------------------------------------------------------------------------------------------#
     #   模型的权值文件路径
     # ----------------------------------------------------------------------------------------------------------------------------#
-    model_path = 'model_data/smoke/ninet/81.55.pth'
+    model_path = ''
     # ---------------------------------------------------------#
     #   下采样的倍数
     # ---------------------------------------------------------#
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #  是否冻结训练,默认先冻结主干训练后解冻训练。
     # ------------------------------------------------------------------#
-    Freeze_Train = True
+    Freeze_Train = False
     # ------------------------------------------------------------------#
     #   冻结阶段训练参数
     #   Init_Epoch          模型当前开始的训练世代，其值可以大于Freeze_Epoch，如设置：
@@ -177,8 +177,8 @@ if __name__ == "__main__":
         local_rank = 0
         rank = 0
 
-
-    model = MyNet(num_classes=num_classes, backbone=backbone, down_rate=downsample_factor, pretrained=pretrained, aux_branch=aux_branch)
+    model = MyNet(num_classes=num_classes, backbone=backbone, down_rate=downsample_factor, pretrained=pretrained,
+                  aux_branch=aux_branch)
 
     # 没有使用预训练权重那么需要初始化
     if not pretrained:
@@ -212,6 +212,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     if fp16:
         from torch.cuda.amp import GradScaler as GradScaler
+
         scaler = GradScaler()
     else:
         scaler = None
@@ -277,7 +278,6 @@ if __name__ == "__main__":
             print("\033[1;33;44m[Warning] 由于总训练步长为%d，小于建议总步长%d，建议设置总世代为%d。\033[0m" % (
                 total_step, wanted_step, wanted_epoch))
 
-
     if True:
         UnFreeze_flag = False
         if Freeze_Train:
@@ -285,13 +285,12 @@ if __name__ == "__main__":
                 param.requires_grad = False
         batch_size = Freeze_batch_size if Freeze_Train else Unfreeze_batch_size
 
-
         # ---------------------------------------#
         #   根据optimizer_type选择优化器
         # ---------------------------------------#
         optimizer = {
             'adam': optim.Adam(model.parameters(), Init_lr, betas=(momentum, 0.999), weight_decay=weight_decay),
-            'sgd': optim.SGD(model.parameters(), Init_lr, momentum=momentum, nesterov=True,weight_decay=weight_decay)
+            'sgd': optim.SGD(model.parameters(), Init_lr, momentum=momentum, nesterov=True, weight_decay=weight_decay)
         }[optimizer_type]
         # ---------------------------------------#
         #   获得学习率下降的公式
@@ -320,10 +319,10 @@ if __name__ == "__main__":
             shuffle = True
 
         gen = DataLoader(train_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
-                         pin_memory=True,drop_last=True, collate_fn=deeplab_dataset_collate, sampler=train_sampler,
+                         pin_memory=True, drop_last=True, collate_fn=deeplab_dataset_collate, sampler=train_sampler,
                          worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
         gen_val = DataLoader(val_dataset, shuffle=shuffle, batch_size=batch_size, num_workers=num_workers,
-                             pin_memory=True,drop_last=True, collate_fn=deeplab_dataset_collate, sampler=val_sampler,
+                             pin_memory=True, drop_last=True, collate_fn=deeplab_dataset_collate, sampler=val_sampler,
                              worker_init_fn=partial(worker_init_fn, rank=rank, seed=seed))
 
         # ----------------------#
