@@ -46,16 +46,21 @@ class CustomDataset(Dataset):
         #   数据增强
         # -------------------------------#
         image, label = self.get_random_data(image, label, self.input_shape, random=self.type_is_train)
+        # # 未注明的类视为背景
+        # label = np.array(label)
+        # label[label >= self.num_classes] = self.num_classes
+        # # -------------------------------------------------------#
+        # #   转化成one_hot的形式
+        # #   在这里需要+1是因为voc数据集有些标签具有白边部分
+        # #   我们需要将白边部分进行忽略，+1的目的是方便忽略。
+        # # -------------------------------------------------------#
+        # seg_labels = np.eye(self.num_classes + 1)[label.reshape([-1])]
+        # seg_labels = seg_labels.reshape((int(self.input_shape[0]), int(self.input_shape[1]), self.num_classes + 1))
+
         label = np.array(label)
-        # 未注明的类视为背景
-        label[label >= self.num_classes] = self.num_classes
-        # -------------------------------------------------------#
-        #   转化成one_hot的形式
-        #   在这里需要+1是因为voc数据集有些标签具有白边部分
-        #   我们需要将白边部分进行忽略，+1的目的是方便忽略。
-        # -------------------------------------------------------#
-        seg_labels = np.eye(self.num_classes + 1)[label.reshape([-1])]
-        seg_labels = seg_labels.reshape((int(self.input_shape[0]), int(self.input_shape[1]), self.num_classes + 1))
+        label[label == 255] = 1
+        seg_labels = np.eye(self.num_classes)[label.reshape([-1])]
+        seg_labels = seg_labels.reshape((int(self.input_shape[0]), int(self.input_shape[1]), self.num_classes))
 
         # pytorch中tensor默认是CHW,所以需要进行维度转换
         image = np.transpose(divide_255(np.array(image, np.float64)), [2, 0, 1])
@@ -172,6 +177,7 @@ def net_dataset_collate(batch):
         pngs.append(png)
         seg_labels.append(labels)
     images = np.array(images)
-    pngs = np.array(pngs) / 255  # 烟雾的标签值为0 255，需要映射到0 1
+    # pngs = np.array(pngs) / 2  # smoke数据集gt为0,255， 除以类别数
+    pngs = np.array(pngs)
     seg_labels = np.array(seg_labels)
     return images, pngs, seg_labels

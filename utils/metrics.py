@@ -91,7 +91,7 @@ def compute_mIoU(gt_dir, pred_dir, png_name_list, num_classes, classes_name_list
         label = np.array(Image.open(gt_imgs[ind]))
 
         if smoke:
-            label = label / 255  # 烟雾数据集是0,255两个值，所有需要除以255转为0,1
+            label = label / 255  # 烟雾数据集是0,255两个值，所以需要除以255转为0,1
             # 烟雾按照阈值划分
             theshold = 0.19
             label[label > theshold] = 1.
