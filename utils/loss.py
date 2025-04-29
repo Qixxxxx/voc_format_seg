@@ -122,7 +122,7 @@ def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio=
     else:
         decay_rate = (min_lr / lr) ** (1 / (step_num - 1))
         step_size = total_iters / step_num
-        func = partial(step_lr, lr, decay_rate, step_size)
+        func = partial(step_lr, lr, decay_rate, 1)
 
     return func
 
