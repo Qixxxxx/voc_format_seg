@@ -120,9 +120,12 @@ def get_lr_scheduler(lr_decay_type, lr, min_lr, total_iters, warmup_iters_ratio=
         no_aug_iter = min(max(no_aug_iter_ratio * total_iters, 1), 15)
         func = partial(yolox_warm_cos_lr, lr, min_lr, total_iters, warmup_total_iters, warmup_lr_start, no_aug_iter)
     else:
-        decay_rate = (min_lr / lr) ** (1 / (step_num - 1))
-        step_size = total_iters / step_num
-        func = partial(step_lr, lr, decay_rate, 1)
+        decay_rate = 0.96
+        step_size = 1
+        # 根据训练参数设置调整
+        # decay_rate = (min_lr / lr) ** (1 / (step_num - 1))
+        # step_size = total_iters / step_num
+        func = partial(step_lr, lr, decay_rate, step_size)
 
     return func
 
