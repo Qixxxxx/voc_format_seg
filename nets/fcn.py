@@ -8,7 +8,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # 网络结构
 class MyNet(nn.Module):
-    def __init__(self, num_classes, down_rate, backbone='resnet50', pretrained=True, aux_branch=True):
+    def __init__(self, num_classes, down_rate, backbone='resnet50conv3x3stem', pretrained=True, aux_branch=True):
         '''num_classes: 分类数, down_rate： 经过特征提取后的下采样倍数, backbone：特征提取网络的使用, pretrained：是否加载预训练权重,
          aux_branch：是否使用辅助loss'''
         super(MyNet, self).__init__()

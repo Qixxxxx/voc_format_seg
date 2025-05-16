@@ -1,7 +1,7 @@
 import torch
 from torchsummary import summary
 
-from nets.pspnet import MyNet
+from nets.fcn import MyNet
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
