@@ -167,7 +167,7 @@ class EvalCallback():
                 os.makedirs(self.miou_out_path)
             if not os.path.exists(pred_dir):
                 os.makedirs(pred_dir)
-            print("Get miou.")
+            print("\nGet miou.")
             for image_id in tqdm(self.image_ids):
                 # -------------------------------#
                 #   从文件中读取图像
@@ -184,7 +184,8 @@ class EvalCallback():
             classes_name_list = ["background", "smoke"]
             hist, IoUs, PA_Recall, Precision = compute_mIoU(gt_dir, pred_dir, self.image_ids, self.num_classes, classes_name_list, smoke=True, test_sd=False)
 
-            temp_miou = np.nanmean(IoUs) * 100
+            # temp_miou = np.nanmean(IoUs) * 100
+            temp_miou = round(IoUs[1] * 100, 2)  # 烟雾分割只需要关注烟的iou，不需要关注背景
 
             self.mious.append(temp_miou)
             self.epoches.append(epoch)
