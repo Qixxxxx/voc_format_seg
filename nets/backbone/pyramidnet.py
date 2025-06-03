@@ -4,6 +4,7 @@ import os
 import torch
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 # 默认权重地址
 DEFAULT_MODEL_URLS = {
@@ -30,6 +31,7 @@ class BasicBlock(nn.Module):
         self.downsample = downsample
         self.stride = stride
         self.dilation = dilation
+        self.conv_channel = nn.Conv2d(inplanes, planes * self.expansion, kernel_size=1, bias=False)
 
     def forward(self, x):
         identity = x
@@ -39,6 +41,12 @@ class BasicBlock(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
         if self.downsample is not None: identity = self.downsample(x)
+        # 处理通道
+        identity_channel = identity.size()[1]
+        out_channel = out.size()[1]
+        if identity_channel != out_channel:
+            identity = self.conv_channel(identity)
+
         out += identity
         out = self.relu(out)
         return out
@@ -59,6 +67,8 @@ class Bottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
         self.dilation = dilation
+        self.conv_channel = nn.Conv2d(inplanes, planes * self.expansion, kernel_size=1, bias=False)
+
 
     def forward(self, x):
         identity = x
@@ -71,6 +81,12 @@ class Bottleneck(nn.Module):
         out = self.conv3(out)
         out = self.bn3(out)
         if self.downsample is not None: identity = self.downsample(x)
+        # 处理通道
+        identity_channel = identity.size()[1]
+        out_channel = out.size()[1]
+        if identity_channel != out_channel:
+            identity = self.conv_channel(identity)
+
         out += identity
         out = self.relu(out)
         return out
@@ -94,6 +110,8 @@ class ResNet(nn.Module):
         assert outstride in outstride_to_strides_and_dilations, 'unsupport outstride %s' % outstride
         stride_list, dilation_list = outstride_to_strides_and_dilations[outstride]
 
+        self.addrate = 2
+        self.stage_input_dim = self.inplanes
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False)
         self.bn1 = norm_layer(64)
@@ -108,6 +126,7 @@ class ResNet(nn.Module):
         self.relu = act_cfg
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
 
+        self.featuremap_dim = self.stage_input_dim
         self.layer1 = self._make_layer(block=block, planes=64, num_blocks=layers[0], stride=stride_list[0], dilation=dilation_list[0], contract_dilation=contract_dilation, norm_layer=norm_layer, act_cfg=act_cfg)
         self.layer2 = self._make_layer(block=block, planes=128, num_blocks=layers[1], stride=stride_list[1], dilation=dilation_list[1], contract_dilation=contract_dilation, norm_layer=norm_layer, act_cfg=act_cfg)
         self.layer3 = self._make_layer(block=block, planes=256, num_blocks=layers[2], stride=stride_list[2], dilation=dilation_list[2], contract_dilation=contract_dilation, norm_layer=norm_layer, act_cfg=act_cfg)
@@ -119,18 +138,22 @@ class ResNet(nn.Module):
         if contract_dilation and dilation > 1:
             dilations[0] = dilation // 2
 
-        if stride != 1 or self.inplanes != planes * block.expansion:
+        self.featuremap_dim = self.featuremap_dim + self.addrate
+
+        if stride != 1 or self.stage_input_dim != self.featuremap_dim * block.expansion:
             downsample = nn.Sequential(
-                nn.Conv2d(self.inplanes, planes * block.expansion,
+                nn.Conv2d(self.stage_input_dim, self.featuremap_dim * block.expansion,
                           kernel_size=1, stride=stride, bias=False),
-                norm_layer(planes * block.expansion),
+                norm_layer(self.featuremap_dim * block.expansion),
             )
 
         layers = []
-        layers.append(block(self.inplanes, planes, stride=stride, dilation=dilations[0], downsample=downsample, norm_layer=norm_layer, act_cfg=act_cfg))
-        self.inplanes = planes * block.expansion
+        layers.append(block(self.stage_input_dim, self.featuremap_dim, stride=stride, dilation=dilations[0], downsample=downsample, norm_layer=norm_layer, act_cfg=act_cfg))
         for i in range(1, num_blocks):
-            layers.append(block(self.inplanes, planes, stride=1, dilation=dilations[i], norm_layer=norm_layer, act_cfg=act_cfg))
+            temp = self.featuremap_dim + self.addrate
+            layers.append(block(self.featuremap_dim * block.expansion, temp, stride=1, dilation=dilations[i], norm_layer=norm_layer, act_cfg=act_cfg))
+            self.featuremap_dim = temp
+        self.stage_input_dim = self.featuremap_dim * block.expansion
 
         return nn.Sequential(*layers)
 
