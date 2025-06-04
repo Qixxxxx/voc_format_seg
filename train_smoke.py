@@ -9,7 +9,7 @@ import torch.distributed as dist
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from nets.pspnet import MyNet
+from nets.fcn import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
 from utils.callbacks import EvalCallback, LossHistory
 from utils.smoke_dataloader import CustomDataset, net_dataset_collate
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # -----------------------------------------------------#
     num_classes = 2
     # ---------------------------------#
-    #   主干网络：
+    #   主干网络,如：resnet50conv3x3stem， hrnetv2_w48
     # ---------------------------------#
     backbone = "resnet50conv3x3stem"
     # ----------------------------------------------------------------------------------------------------------------------------#
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     # ---------------------------------------------------------#
     #   下采样的倍数
     # ---------------------------------------------------------#
-    downsample_factor = 8
+    downsample_factor = 32
     # ------------------------------#
     #   输入图片的大小
     # ------------------------------#

@@ -98,7 +98,7 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, use_conv3x3_stem=False, outstride=32, contract_dilation=True,
                  norm_layer=nn.BatchNorm2d, act_cfg=nn.ReLU(inplace=True)):
 
-        self.use_conv3x3_stem =use_conv3x3_stem
+        self.use_conv3x3_stem = use_conv3x3_stem
         self.inplanes = 128 if self.use_conv3x3_stem else 64
         super(ResNet, self).__init__()
         # 使用空洞卷积时的步长设置和空洞率设置
@@ -110,7 +110,7 @@ class ResNet(nn.Module):
         assert outstride in outstride_to_strides_and_dilations, 'unsupport outstride %s' % outstride
         stride_list, dilation_list = outstride_to_strides_and_dilations[outstride]
 
-        self.addrate = 2
+        self.addrate = 4
         self.stage_input_dim = self.inplanes
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False)

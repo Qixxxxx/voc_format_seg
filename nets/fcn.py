@@ -1,7 +1,8 @@
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
-from .backbone.resnet import get_backbone
+# from .backbone.resnet import get_backbone
+from .backbone.pyramidnet import get_backbone
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -13,7 +14,8 @@ class MyNet(nn.Module):
          aux_branch：是否使用辅助loss'''
         super(MyNet, self).__init__()
         # 根据特征提取网络的输出维度确定psp_module的输入维度
-        out_channel = 2048
+        # out_channel = 2048
+        out_channel = 768  # 金字塔resnet
         self.backbone = get_backbone(backbone, pretrained, outstride=down_rate)
 
         self.final_seg = nn.Sequential(
