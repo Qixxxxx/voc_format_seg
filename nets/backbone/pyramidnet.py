@@ -3,6 +3,7 @@ import os
 
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 import torch.utils.model_zoo as model_zoo
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -31,8 +32,6 @@ class BasicBlock(nn.Module):
         self.downsample = downsample
         self.stride = stride
         self.dilation = dilation
-        self.conv_channel = nn.Conv2d(inplanes, planes * self.expansion, kernel_size=1, bias=False)
-
     def forward(self, x):
         identity = x
         out = self.conv1(x)
@@ -45,9 +44,9 @@ class BasicBlock(nn.Module):
         identity_channel = identity.size()[1]
         out_channel = out.size()[1]
         if identity_channel != out_channel:
-            identity = self.conv_channel(identity)
-
-        out += identity
+            out += F.pad(identity, (0, 0, 0, 0, 0, out_channel - identity_channel),'constant', 0)
+        else:
+            out = out + identity
         out = self.relu(out)
         return out
 
@@ -67,8 +66,6 @@ class Bottleneck(nn.Module):
         self.downsample = downsample
         self.stride = stride
         self.dilation = dilation
-        self.conv_channel = nn.Conv2d(inplanes, planes * self.expansion, kernel_size=1, bias=False)
-
 
     def forward(self, x):
         identity = x
@@ -85,9 +82,9 @@ class Bottleneck(nn.Module):
         identity_channel = identity.size()[1]
         out_channel = out.size()[1]
         if identity_channel != out_channel:
-            identity = self.conv_channel(identity)
-
-        out += identity
+            out += F.pad(identity, (0, 0, 0, 0, 0, out_channel - identity_channel),'constant', 0)
+        else:
+            out = out + identity
         out = self.relu(out)
         return out
 
