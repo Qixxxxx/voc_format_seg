@@ -15,7 +15,7 @@ class MyNet(nn.Module):
         super(MyNet, self).__init__()
         # 根据特征提取网络的输出维度确定psp_module的输入维度
         # out_channel = 2048
-        out_channel = 768  # 金字塔resnet
+        out_channel = 1024  # 金字塔resnet
         self.backbone = get_backbone(backbone, pretrained, outstride=down_rate)
 
         self.final_seg = nn.Sequential(

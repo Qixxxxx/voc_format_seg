@@ -110,7 +110,7 @@ class ResNet(nn.Module):
         assert outstride in outstride_to_strides_and_dilations, 'unsupport outstride %s' % outstride
         stride_list, dilation_list = outstride_to_strides_and_dilations[outstride]
 
-        self.addrate = 4
+        self.addrate = 8
         self.stage_input_dim = self.inplanes
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=2, padding=1, bias=False)
