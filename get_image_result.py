@@ -6,7 +6,7 @@ from predict_model import PredictModel
 
 model = PredictModel()
 
-IMG_DIR = "datasets/rellay_smoke_original"
+IMG_DIR = "test_data/test_01"
 
 os.makedirs("results", exist_ok=True)
 img_names = os.listdir(IMG_DIR)
