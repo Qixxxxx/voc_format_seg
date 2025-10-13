@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 
-from nets.ninet import MyNet
+from nets.pspnet import MyNet
 from utils.common_util import cvtColor, divide_255, resize_image, show_config
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -19,7 +19,7 @@ class PredictModel(object):
         # -------------------------------------------------------------------#
         #   model_path指向logs文件夹下的权值文件
         # -------------------------------------------------------------------#
-        "model_path": 'model_data/smoke/ninet/81.55.pth',
+        "model_path": 'model_data/voc/backbone_82.56.pth',
         "num_classes": 21,
         # ----------------------------------------#
         #   所使用的的主干网络：
