@@ -11,8 +11,8 @@ from torch.utils.data import DataLoader
 
 from nets.pspnet import MyNet
 from utils.loss import get_lr_scheduler, set_optimizer_lr, weights_init
-from utils.voc_callbacks import EvalCallback, LossHistory
-from utils.voc_dataloader import CustomDataset, net_dataset_collate
+from utils.callbacks import EvalCallback, LossHistory
+from utils.dataloader import CustomDataset, net_dataset_collate
 from utils.common_util import seed_everything, show_config, worker_init_fn
 from utils.fit_function import fit_one_epoch
 
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     # ------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     # ------------------------------------------------------------------#
-    save_dir = 'voc_logs'
+    save_dir = 'logs'
     # ------------------------------------------------------------------#
     #   eval_flag       是否在训练时进行评估，评估对象为验证集
     #   eval_period     代表多少个epoch评估一次，不建议频繁的评估

@@ -172,8 +172,8 @@ cython_debug/
 
 *.pth
 
-/voc_logs/*
-!/voc_logs/.gitkeep
+/logs/*
+!/logs/.gitkeep
 
 /results/*
 !/results/.gitkeep
